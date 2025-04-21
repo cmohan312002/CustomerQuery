@@ -55,7 +55,7 @@ def preprocess_data(df):
 # Step 3: Train LSTM + XGBoost Model
 def train_model(X_train, X_val, y_train, y_val, tokenizer, num_classes):
     # Load GloVe embeddings
-    embedding_index = {}
+    embedding_index = {} 
     with open("glove.6B.200d.txt", encoding="utf-8") as f:  # Update with the correct GloVe path
         for line in f:
             values = line.split()
