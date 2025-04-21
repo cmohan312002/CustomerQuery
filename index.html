@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Query Classification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e9ffe9;
+            color: #2d8a2d;
+            border: 1px solid #2d8a2d;
+            border-radius: 4px;
+        }
+        .error {
+            margin-top: 20px;
+            padding: 10px;
+            background: #ffe9e9;
+            color: #a22d2d;
+            border: 1px solid #a22d2d;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Customer Query Classification</h1>
+        <textarea id="queryInput" placeholder="Enter your query here..."></textarea>
+        <button onclick="getPrediction()">Classify</button>
+        <div id="result" class="result" style="display: none;"></div>
+        <div id="error" class="error" style="display: none;"></div>
+    </div>
+
+    <script>
+        async function getPrediction() {
+            const queryText = document.getElementById("queryInput").value;
+            const resultDiv = document.getElementById("result");
+            const errorDiv = document.getElementById("error");
+
+            // Clear previous results/errors
+            resultDiv.style.display = "none";
+            errorDiv.style.display = "none";
+
+            if (!queryText) {
+                alert("Please enter a query.");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ query: queryText })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.style.display = "block";
+                    resultDiv.textContent = `Predicted Category: ${data.predicted_category}`;
+                } else {
+                    errorDiv.style.display = "block";
+                    errorDiv.textContent = `Error: ${data.error || "An error occurred while predicting."}`;
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                errorDiv.style.display = "block";
+                errorDiv.textContent = "Failed to connect to the server.";
+            }
+        }
+    </script>
+</body>
+</html>
